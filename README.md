@@ -17,7 +17,7 @@ Cas: "authn-xxx-conjur.herokuapp.com"
 Then run like below.
 
 ```
-(python-2.7)rmdac-cab:python-2.7 dbernick$ python /Users/dbernick/Code/api-python/src/testscript.py --username dbernick --password 'XXXXXX' -r cas-cmi-conjur.herokuapp.com --login
+(python-2.7)rmdac-cab:python-2.7 dbernick$ python /Users/dbernick/Code/api-python/src/testscript.py --username dbernick --password 'XXXXXX' -r cas-xxx-conjur.herokuapp.com --login
 Testing login: Getting CAS token
 service token     : ST-13-XXXXXXX-cas
 Conjursecret XXXXXXXXXXXXXXXXXXXXXkw2m3fyxm76x4sk
