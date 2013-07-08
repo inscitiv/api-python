@@ -21,6 +21,7 @@ Then run like below.
 Testing login: Getting CAS token
 service token     : ST-13-XXXXXXX-cas
 Conjursecret XXXXXXXXXXXXXXXXXXXXXkw2m3fyxm76x4sk
+Authorization: Token token="xxXXXXxxjasfkldsajflkdasjflkjads klfjsadlkfj dskl fjadsklf jlkadsfjlasdkf jsd..asdfasdfasdf"
 ```
 
 Then the token can be passed to more of the API. Things XXXXed to protect the innocent.
