@@ -1,7 +1,9 @@
 api-python
 ==========
 
-Python API for Conjur
+Python API for Conjur.  
+
+Install requirements.txt via pip. Then run like below.
 
 ```
 (python-2.7)rmdac-cab:python-2.7 dbernick$ python /Users/dbernick/Code/api-python/src/testscript.py --username dbernick --password 'XXXXXX' -r cas-cmi-conjur.herokuapp.com --login
