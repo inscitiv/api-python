@@ -43,7 +43,7 @@ def main(argv):
 		apikey = login_cas(username,password,url)
                 print "Conjur secret %s" % apikey
 		token_encode = base64.encodestring(authenticate(username,apikey))
-		print "Authorization: Token token=\""+token_encode+"\""
+		print "Authorization: Token token=\"%s\" " % token_encode
             except Exception,exc:
                 print "Error in test: %s" % (exc)
         else:
