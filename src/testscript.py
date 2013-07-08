@@ -39,7 +39,7 @@ def main(argv):
         if opt in (" ", "--login"):
             print "Testing login: Getting CAS token"
             try:
-                print "Token %s" % login_cas(username,password,url)
+                print "Conjursecret %s" % login_cas(username,password,url)
             except Exception,exc:
                 print "Error in test: %s" % (exc)
         else:

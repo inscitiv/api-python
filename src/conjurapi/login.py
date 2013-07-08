@@ -58,10 +58,21 @@ def login_cas(username,passwd,casurl=None):
 		conn.close()
 
 		#print "service: %s" % (service)
-		#print "st     : %s" % (st)
+		print "service token     : %s" % (st)
 		#print "***"
-				
-		return st
+		bodyurl =  "%s?ticket=%s" % ( service, st )
+
+		cj = cookielib.CookieJar()
+		# no proxies please
+		no_proxy_support = urllib2.ProxyHandler({})
+		# we need to handle session cookies AND redirects
+		cookie_handler = urllib2.HTTPCookieProcessor(cj)
+
+		opener = urllib2.build_opener(no_proxy_support, cookie_handler, urllib2.HTTPHandler(debuglevel=1))
+		urllib2.install_opener(opener)
+		protected_data = urllib2.urlopen(bodyurl).read()
+		#print protected_data				
+		return protected_data
 	except Exception,exc:
 		print "CAS login error: %s" % (exc)
 		return None
