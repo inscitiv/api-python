@@ -28,7 +28,7 @@ class ConjurConfig:
 			config.read('conjur.py.example')
 			return config.get('Conjur', 'Cas')
 
-
+#this logs-in and gets the service token for cas and returns the apikey
 def login_cas(username,passwd,casurl=None):
 	cfg = ConjurConfig()
 	if casurl==None:
@@ -77,6 +77,7 @@ def login_cas(username,passwd,casurl=None):
 		print "CAS login error: %s" % (exc)
 		return None
 
+#pass api key and username to get a token. Token is usually base64.encodestring'd and put in headers.
 def authenticate(username,apikey):
         cfg = ConjurConfig()
 
@@ -86,9 +87,7 @@ def authenticate(username,apikey):
                 params = {}
                 headers = {"Accept": "text/plain"}
 		r=res.post(url,payload=apikey,headers=headers,params_dict=params)
-                #print r.body_string()
 		return r.body_string()
-		data = response.read()
 	except Exception,exc:
 		print "Error authenticate: %s" % (exc)
 
