@@ -86,8 +86,9 @@ def authenticate(username,apikey):
                 params = {}
                 headers = {"Accept": "text/plain"}
 		r=res.post(url,payload=apikey,headers=headers,params_dict=params)
-                print r.body_string()
-		#data = response.read()
+                #print r.body_string()
+		return r.body_string()
+		data = response.read()
 	except Exception,exc:
 		print "Error authenticate: %s" % (exc)
 

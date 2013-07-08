@@ -1,5 +1,6 @@
 import sys, getopt
 from conjurapi.login import login_cas,authenticate
+import base64
 
 def main(argv):
     username=""
@@ -41,7 +42,8 @@ def main(argv):
             try:
 		apikey = login_cas(username,password,url)
                 print "Conjur secret %s" % apikey
-		authenticate(username,apikey)
+		token_encode = base64.encodestring(authenticate(username,apikey))
+		print "Authorization: Token token=\""+token_encode+"\""
             except Exception,exc:
                 print "Error in test: %s" % (exc)
         else:
