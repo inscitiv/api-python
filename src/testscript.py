@@ -1,5 +1,5 @@
 import sys, getopt
-from conjurapi.login import login_cas
+from conjurapi.login import login_cas,authenticate
 
 def main(argv):
     username=""
@@ -39,7 +39,9 @@ def main(argv):
         if opt in (" ", "--login"):
             print "Testing login: Getting CAS token"
             try:
-                print "Conjursecret %s" % login_cas(username,password,url)
+		apikey = login_cas(username,password,url)
+                print "Conjur secret %s" % apikey
+		authenticate(username,apikey)
             except Exception,exc:
                 print "Error in test: %s" % (exc)
         else:

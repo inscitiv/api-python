@@ -6,7 +6,7 @@ Created on Jul 7, 2013
 import ConfigParser,caslib
 import os.path
 import httplib, urllib, urllib2, cookielib
-
+from restkit import Resource
 
 class ConjurConfig:
 	
@@ -76,3 +76,18 @@ def login_cas(username,passwd,casurl=None):
 	except Exception,exc:
 		print "CAS login error: %s" % (exc)
 		return None
+
+def authenticate(username,apikey):
+        cfg = ConjurConfig()
+
+	try:
+		res = Resource('https://authn-%s-conjur.herokuapp.com' % (cfg.getAccount()))
+                url = "/users/%s/authenticate" % username
+                params = {}
+                headers = {"Accept": "text/plain"}
+		r=res.post(url,payload=apikey,headers=headers,params_dict=params)
+                print r.body_string()
+		#data = response.read()
+	except Exception,exc:
+		print "Error authenticate: %s" % (exc)
+
