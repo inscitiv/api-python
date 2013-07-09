@@ -13,27 +13,36 @@ class ConjurConfig:
 	def getAccount(self):
 		config = ConfigParser.ConfigParser()
 		try:
-			config.read(os.path.expanduser("~")+'/.conjurpy.cfg')
-			return config.get('Conjur', 'Account')
+			config.read(os.path.expanduser("~")+'/.conjurrc')
+			return config.get('Conjur', 'account')[0]
 		except Exception,e:
 			config.read('conjur.py.example')
-			return config.get('Conjur', 'Account')
+			return config.get('Conjur', 'account')[0]
 
-	def getCas(self):
+	def getUrl(self):
 		config = ConfigParser.ConfigParser()
 		try:
-			config.read(os.path.expanduser("~")+'/.conjurpy.cfg')
-			return config.get('Conjur', 'Cas')
+			config.read(os.path.expanduser("~")+'/.conjurrc')
+			return config.get('Conjur', 'url')
 		except Exception,e:
 			config.read('conjur.py.example')
-			return config.get('Conjur', 'Cas')
+			return config.get('Conjur', 'url')
+
+        def getCas(self):
+                config = ConfigParser.ConfigParser()
+                try:
+                        config.read(os.path.expanduser("~")+'/.conjurrc')
+                        return config.get('Conjur', 'cas')
+                except Exception,e:
+                        config.read('conjur.py.example')
+                        return config.get('Conjur', 'cas')
+
 
 #this logs-in and gets the service token for cas and returns the apikey
 def login_cas(username,passwd,casurl=None):
 	cfg = ConjurConfig()
 	if casurl==None:
 		casurl = cfg.getCas()
-	
 	try:
 		params = urllib.urlencode({'username': username, 'password': passwd})
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
@@ -48,7 +57,6 @@ def login_cas(username,passwd,casurl=None):
 		tgt = location[location.rfind('/') + 1:]
 		conn.close()
 		#return tgt
-		
 		service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (cfg.getAccount())
 		params = urllib.urlencode({'service': service })
 		conn = httplib.HTTPSConnection(casurl,443)
@@ -58,10 +66,10 @@ def login_cas(username,passwd,casurl=None):
 		conn.close()
 
 		#print "service: %s" % (service)
-		print "service token     : %s" % (st)
+		#print "service token     : %s" % (st)
 		#print "***"
 		bodyurl =  "%s?ticket=%s" % ( service, st )
-
+		print bodyurl
 		cj = cookielib.CookieJar()
 		# no proxies please
 		no_proxy_support = urllib2.ProxyHandler({})
