@@ -8,10 +8,13 @@ Install requirements.txt via pip.
 Put a .conjurpy.cfg in your home dir.
 
 ```
-(python-2.7)rmdac-cab:src dbernick$ cat ~/.conjurpy.cfg 
+(python-2.7)rmdac-cab:src dbernick$ cat ~/.conjurrc 
 [Conjur]
-Account: xfx0x
-Cas: "authn-xxx-conjur.herokuapp.com"
+account: bccca
+plugins: 
+- xxxxxx
+cas: cas-xxx-conjur.herokuapp.com
+url: authn-xxxx-conjur.herokuapp.com
 ```
 
 Then run like below.
