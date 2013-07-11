@@ -29,9 +29,8 @@ Authorization: Token token="xxXXXXxxjasfkldsajflkdasjflkjads klfjsadlkfj dskl fj
 
 Then the token can be passed to more of the API. Things XXXXed to protect the innocent.
 
-'''
 TODO
-'''
+================
 PORT THESE  
 in resource.rb:  
 # Lists roles that have a specified permission on the resource.  
