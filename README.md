@@ -28,3 +28,15 @@ Authorization: Token token="xxXXXXxxjasfkldsajflkdasjflkjads klfjsadlkfj dskl fj
 ```
 
 Then the token can be passed to more of the API. Things XXXXed to protect the innocent.
+
+'''
+TODO
+'''
+PORT THESE  
+in resource.rb:  
+# Lists roles that have a specified permission on the resource.  
+     def permitted_roles(permission, options = {})  
+in role.rb:  
+def all(options = {})  
+def permitted?(resource_kind, resource_id, privilege, options = {})  
+def members  
