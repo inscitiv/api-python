@@ -33,9 +33,13 @@ TODO
 ================
 PORT THESE  
 in resource.rb:  
-# Lists roles that have a specified permission on the resource.  
+```
+#Lists roles that have a specified permission on the resource.  
      def permitted_roles(permission, options = {})  
+```
 in role.rb:  
+```
 def all(options = {})  
 def permitted?(resource_kind, resource_id, privilege, options = {})  
 def members  
+```
