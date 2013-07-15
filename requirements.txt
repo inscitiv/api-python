@@ -1,3 +1,4 @@
 caslib
 boto
 restkit
+pyyaml

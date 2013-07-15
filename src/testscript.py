@@ -1,5 +1,6 @@
 import sys, getopt
-from conjurapi.login import login_cas,authenticate
+from conjurapi.login import login_cas,authenticate,tokenHandler
+from conjurapi import Resource
 import base64
 
 def main(argv):
@@ -7,7 +8,7 @@ def main(argv):
     password=""
     url = ""
     try:
-        opts, args = getopt.getopt(argv,"hnu:p:r:l",["username=","password=","url=","login"])
+        opts, args = getopt.getopt(argv,"hnu:p:r:lm",["username=","password=","url=","login","permittedroles"])
     except getopt.GetoptError:
         print "To test login:"
         print 'testscript.py -u casusername -p caspassword -r cashost --login'
@@ -16,6 +17,7 @@ def main(argv):
         print '--url cashost'
         print 'Functions:'
         print '--login'
+        print '--permittedroles'
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
@@ -25,6 +27,7 @@ def main(argv):
             print '--url cashost'
             print 'Functions:'
             print '--login'
+            print '--permittedroles'
             sys.exit()
         elif opt in ("-u", "--username"):
             username = arg
@@ -40,10 +43,19 @@ def main(argv):
         if opt in (" ", "--login"):
             print "Testing login: Getting CAS token"
             try:
-		apikey = login_cas(username,password,url)
+                apikey = login_cas(username,password,url)
                 print "Conjur secret %s" % apikey
-		token_encode = base64.encodestring(authenticate(username,apikey))
-		print "Authorization: Token token=\"%s\" " % token_encode
+                token_encode = tokenHandler(authenticate(username,apikey))
+                print "Authorization: %s" % token_encode
+            except Exception,exc:
+                print "Error in test: %s" % (exc)
+        elif opt in(" ","--permittedroles"):
+            try:
+                apikey = login_cas(username,password,url)
+                token_encode = tokenHandler(authenticate(username,apikey))
+                options={}
+                res = Resource()
+                res.premitted_roles(token_encode, permission, options)
             except Exception,exc:
                 print "Error in test: %s" % (exc)
         else:
