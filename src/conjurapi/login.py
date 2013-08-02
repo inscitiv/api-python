@@ -57,10 +57,52 @@ class ConjurConfig:
             raise Exception("Need valid conjurrc")
             #config.read('conjur.py.example')
             #return config.get('Conjur', 'account')[0]
+    
+    def newCredential(self,machine,username,password):
+        config = ConfigParser.ConfigParser()
+        try:
+            #config = load(file(os.path.expanduser("~")+'/.conjurrc','r'))
+            #config.read(os.path.expanduser("~")+'/.conauth')
+            config.add_section(machine)
+            config.set(machine, 'login', username)
+            config.set(machine, 'apikey', password)
+            # Writing our configuration file to 'example.cfg'
+            with open(os.path.expanduser("~")+'/.conauth', 'wb') as configfile:
+                config.write(configfile)
+        except Exception,e:
+            raise Exception("Need valid .conauth")
 
+    def delCredential(self,machine):
+        config = ConfigParser.RawConfigParser()
+        try:
+            config.read(os.path.expanduser("~")+'/.conauth')
+            try:
+                config.remove_section(machine)
+                with open(os.path.expanduser("~")+'/.conauth', 'wb') as configfile:
+                    config.write(configfile)
+            except:
+                pass            
+        except Exception,e:
+            raise Exception("Can't delete %s" % e)
 
-#this logs-in and gets the service token for cas and returns the apikey
-def login_cas(username,passwd,casurl=None):
+    def getCredential(self,machine):
+        config = ConfigParser.RawConfigParser()
+        try:
+            config.read(os.path.expanduser("~")+'/.conauth')
+            try:
+                login = config.get(machine, 'login')
+                apikey = config.get(machine, 'apikey')
+                return {
+                        "login":login,
+                        "apikey":apikey
+                        }
+            except Exception,e:
+                raise Exception("Need to re-login")
+        except Exception,e:
+            raise Exception("Need valid .conauth or need to login: %s" % e)
+            return None
+
+def cas_only(username,passwd,casurl=None):
     cfg = ConjurConfig()
     if casurl==None:
         casurl = cfg.getCas()
@@ -85,7 +127,19 @@ def login_cas(username,passwd,casurl=None):
         response = conn.getresponse()
         st = response.read()
         conn.close()
+        return st
+    except Exception,exc:
+        print "CAS login error: %s" % (exc)
+        return None
 
+#this logs-in and gets the service token for cas and returns the apikey
+def login_cas(username,passwd,casurl=None):
+    cfg = ConjurConfig()
+    if casurl==None:
+        casurl = cfg.getCas()
+    try:
+        service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (cfg.getAccount())
+        st = cas_only(username,passwd,casurl)        
         #print "service: %s" % (service)
         #print "service token     : %s" % (st)
         #print "***"
