@@ -1,6 +1,7 @@
 import sys, getopt
 from conjurapi.login import login_cas,authenticate,tokenHandler
 from conjurapi import Resource
+from conjurapi.clilib import cliauthenticate,clilogin
 import base64
 
 def main(argv):
@@ -43,19 +44,22 @@ def main(argv):
         if opt in (" ", "--login"):
             print "Testing login: Getting CAS token"
             try:
-                apikey = login_cas(username,password,url)
-                print "Conjur secret %s" % apikey
-                token_encode = tokenHandler(authenticate(username,apikey))
-                print "Authorization: %s" % token_encode
+                casurl = url
+                clilogin(username,password,casurl)
+                token = cliauthenticate()
+                print "Logged in and Authenticated"
             except Exception,exc:
                 print "Error in test: %s" % (exc)
         elif opt in(" ","--permittedroles"):
             try:
-                apikey = login_cas(username,password,url)
-                token_encode = tokenHandler(authenticate(username,apikey))
-                options={}
+                token = cliauthenticate()
+                options={
+                         "permission":"read",
+                         "kind":"environment",
+                         "identifier":""
+                }
                 res = Resource()
-                res.premitted_roles(token_encode, permission, options)
+                res.premitted_roles(token, options)
             except Exception,exc:
                 print "Error in test: %s" % (exc)
         else:
