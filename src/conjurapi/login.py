@@ -102,7 +102,7 @@ class ConjurConfig:
             raise Exception("Need valid .conauth or need to login: %s" % e)
             return None
 
-def cas_only(username,passwd,casurl=None):
+def cas_only(username,passwd,casurl=None,serviceurl=None):
     cfg = ConjurConfig()
     if casurl==None:
         casurl = cfg.getCas()
@@ -120,7 +120,11 @@ def cas_only(username,passwd,casurl=None):
         tgt = location[location.rfind('/') + 1:]
         conn.close()
         #return tgt
-        service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (cfg.getAccount())
+        service=""
+        if serviceurl:
+            service = serviceurl
+        else:
+            service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (cfg.getAccount())
         params = urllib.urlencode({'service': service })
         conn = httplib.HTTPSConnection(casurl,443)
         conn.request("POST", "/v1/tickets/%s" % ( tgt ), params, headers)
