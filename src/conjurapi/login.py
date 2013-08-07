@@ -3,7 +3,7 @@ Created on Jul 7, 2013
 
 @author: bernz
 '''
-import ConfigParser,caslib,os.path,httplib, urllib, urllib2, cookielib,base64
+import ConfigParser,caslib,os.path,httplib, urllib, urllib2, cookielib,base64,re
 from restkit import Resource
 from yaml import load
 
@@ -102,10 +102,16 @@ class ConjurConfig:
             raise Exception("Need valid .conauth or need to login: %s" % e)
             return None
 
-def cas_only(username,passwd,casurl=None,serviceurl=None):
+def cas_only(username,passwd,casurl=None,serviceurl=None,account=None):
     cfg = ConjurConfig()
     if casurl==None:
         casurl = cfg.getCas()
+    conaccount =""
+    try:
+        conaccount = cfg.getAccount()
+    except:
+        conaccount = account    
+
     try:
         params = urllib.urlencode({'username': username, 'password': passwd})
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
@@ -124,7 +130,7 @@ def cas_only(username,passwd,casurl=None,serviceurl=None):
         if serviceurl:
             service = serviceurl
         else:
-            service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (cfg.getAccount())
+            service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (conaccount)
         params = urllib.urlencode({'service': service })
         conn = httplib.HTTPSConnection(casurl,443)
         conn.request("POST", "/v1/tickets/%s" % ( tgt ), params, headers)
@@ -137,12 +143,17 @@ def cas_only(username,passwd,casurl=None,serviceurl=None):
         return None
 
 #this logs-in and gets the service token for cas and returns the apikey
-def login_cas(username,passwd,casurl=None):
+def login_cas(username,passwd,casurl=None,account=None):
     cfg = ConjurConfig()
     if casurl==None:
         casurl = cfg.getCas()
+    conaccount =""
     try:
-        service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (cfg.getAccount())
+        conaccount = cfg.getAccount()
+    except:
+        conaccount = account            
+    try:
+        service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (conaccount)
         st = cas_only(username,passwd,casurl)        
         #print "service: %s" % (service)
         #print "service token     : %s" % (st)
@@ -177,5 +188,7 @@ def authenticate(username,apikey):
         print "Error authenticate: %s" % (exc)
         
 def tokenHandler(token):
-    token_encode = base64.encodestring(token)
-    return "Token token=\"%s\" " % token_encode
+    token_encode = base64.urlsafe_b64encode(token)
+    t = token_encode
+    #t2 = re.sub("\n", "", t)
+    return "Token token=\"%s\"" % t
