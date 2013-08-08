@@ -155,20 +155,14 @@ def login_cas(username,passwd,casurl=None,account=None):
     try:
         service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (conaccount)
         st = cas_only(username,passwd,casurl)        
-        #print "service: %s" % (service)
-        #print "service token     : %s" % (st)
-        #print "***"
         bodyurl =  "%s?ticket=%s" % ( service, st )
         cj = cookielib.CookieJar()
-        # no proxies please
         no_proxy_support = urllib2.ProxyHandler({})
-        # we need to handle session cookies AND redirects
         cookie_handler = urllib2.HTTPCookieProcessor(cj)
 
         opener = urllib2.build_opener(no_proxy_support, cookie_handler, urllib2.HTTPHandler(debuglevel=1))
         urllib2.install_opener(opener)
         protected_data = urllib2.urlopen(bodyurl).read()
-        #print protected_data                
         return protected_data
     except Exception,exc:
         print "CAS login error: %s" % (exc)
