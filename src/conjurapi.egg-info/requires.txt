@@ -1,0 +1,5 @@
+setuptools
+caslib
+boto
+restkit
+pyyaml
