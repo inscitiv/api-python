@@ -3,114 +3,12 @@ Created on Jul 7, 2013
 
 @author: bernz
 '''
-import ConfigParser,caslib,os.path,httplib, urllib, urllib2, cookielib,base64,re
+import caslib,os.path,httplib, urllib, urllib2, cookielib,base64,re
 from restkit import Resource
-from yaml import load
 
-class ConjurConfig:
-    
-    def getAccount(self):
-        #config = ConfigParser.ConfigParser()
-        try:
-            config = load(file(os.path.expanduser("~")+'/.conjurrc','r'))
-            #config = ConfigObj(os.path.expanduser("~")+'/.conjurrc',configobj.pref_dict)
-            #config.read(os.path.expanduser("~")+'/.conjurrc')
-            #return config.get('Conjur', 'account')[0]
-            return config.get('account')
-        except Exception,e:
-            raise Exception("Need valid conjurrc: %s" % (e))
-            #config.read('conjur.py.example')
-            #return config.get('Conjur', 'account')[0]
-
-    def getUrl(self):
-        #config = ConfigParser.ConfigParser()
-        try:
-            config = load(file(os.path.expanduser("~")+'/.conjurrc','r'))
-            #config.read(os.path.expanduser("~")+'/.conjurrc')
-            #return config.get('Conjur', 'account')[0]
-            return config.get('url')
-        except Exception,e:
-            raise Exception("Need valid conjurrc")
-            #config.read('conjur.py.example')
-            #return config.get('Conjur', 'account')[0]
-    
-    def getCas(self):
-        #config = ConfigParser.ConfigParser()
-        try:
-            config = load(file(os.path.expanduser("~")+'/.conjurrc','r'))
-            #config.read(os.path.expanduser("~")+'/.conjurrc')
-            #return config.get('Conjur', 'account')[0]
-            return config.get('cas')
-        except Exception,e:
-            raise Exception("Need valid conjurrc")
-            #config.read('conjur.py.example')
-            #return config.get('Conjur', 'account')[0]
-                       
-    def getStack(self):
-        #config = ConfigParser.ConfigParser()
-        try:
-            config = load(file(os.path.expanduser("~")+'/.conjurrc','r'))
-            #config.read(os.path.expanduser("~")+'/.conjurrc')
-            #return config.get('Conjur', 'account')[0]
-            return config.get('stack')
-        except Exception,e:
-            raise Exception("Need valid conjurrc")
-            #config.read('conjur.py.example')
-            #return config.get('Conjur', 'account')[0]
-    
-    def newCredential(self,machine,username,password):
-        config = ConfigParser.ConfigParser()
-        try:
-            #config = load(file(os.path.expanduser("~")+'/.conjurrc','r'))
-            #config.read(os.path.expanduser("~")+'/.conauth')
-            config.add_section(machine)
-            config.set(machine, 'login', username)
-            config.set(machine, 'apikey', password)
-            # Writing our configuration file to 'example.cfg'
-            with open(os.path.expanduser("~")+'/.conauth', 'wb') as configfile:
-                config.write(configfile)
-        except Exception,e:
-            raise Exception("Need valid .conauth")
-
-    def delCredential(self,machine):
-        config = ConfigParser.RawConfigParser()
-        try:
-            config.read(os.path.expanduser("~")+'/.conauth')
-            try:
-                config.remove_section(machine)
-                with open(os.path.expanduser("~")+'/.conauth', 'wb') as configfile:
-                    config.write(configfile)
-            except:
-                pass            
-        except Exception,e:
-            raise Exception("Can't delete %s" % e)
-
-    def getCredential(self,machine):
-        config = ConfigParser.RawConfigParser()
-        try:
-            config.read(os.path.expanduser("~")+'/.conauth')
-            try:
-                login = config.get(machine, 'login')
-                apikey = config.get(machine, 'apikey')
-                return {
-                        "login":login,
-                        "apikey":apikey
-                        }
-            except Exception,e:
-                raise Exception("Need to re-login")
-        except Exception,e:
-            raise Exception("Need valid .conauth or need to login: %s" % e)
-            return None
 
 def cas_only(username,passwd,casurl=None,serviceurl=None,account=None):
-    cfg = ConjurConfig()
-    if casurl==None:
-        casurl = cfg.getCas()
-    conaccount =""
-    try:
-        conaccount = cfg.getAccount()
-    except:
-        conaccount = account    
+    conaccount = account
 
     try:
         params = urllib.urlencode({'username': username, 'password': passwd})
@@ -144,17 +42,10 @@ def cas_only(username,passwd,casurl=None,serviceurl=None,account=None):
 
 #this logs-in and gets the service token for cas and returns the apikey
 def login_cas(username,passwd,casurl=None,account=None):
-    cfg = ConjurConfig()
-    if casurl==None:
-        casurl = cfg.getCas()
-    conaccount =""
-    try:
-        conaccount = cfg.getAccount()
-    except:
-        conaccount = account            
+    conaccount = account            
     try:
         service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (conaccount)
-        st = cas_only(username,passwd,casurl)        
+        st = cas_only(username,passwd,casurl,account=conaccount)        
         bodyurl =  "%s?ticket=%s" % ( service, st )
         cj = cookielib.CookieJar()
         no_proxy_support = urllib2.ProxyHandler({})
@@ -169,10 +60,9 @@ def login_cas(username,passwd,casurl=None,account=None):
         return None
        
 #pass api key and username to get a token. Token is usually base64.encodestring'd and put in headers.
-def authenticate(username,apikey):
-    cfg = ConjurConfig()
+def authenticate(username=None,apikey=None,account=None):
     try:
-        res = Resource('https://authn-%s-conjur.herokuapp.com' % (cfg.getAccount()))
+        res = Resource('https://authn-%s-conjur.herokuapp.com' % (account))
         url = "/users/%s/authenticate" % username
         params = {}
         headers = {"Accept": "text/plain"}

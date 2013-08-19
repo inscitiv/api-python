@@ -1,7 +1,7 @@
 import sys, getopt
 from conjurapi.login import login_cas,authenticate,tokenHandler
 from conjurapi.Resource import Resource
-from conjurapi.clilib import cliauthenticate,clilogin
+from conjurapi.clilib import cliauthenticate,clilogin,ConjurConfig
 import base64
 
 def main(argv):
@@ -53,19 +53,17 @@ def main(argv):
         elif opt in(" ","--permittedroles"):
             try:
                 token = cliauthenticate()
+                cfg = ConjurConfig()
                 options={
-                         "username":username
+                         "username":username,
+                         "account":cfg.getConfVar(var="account"),
+                         "stack":cfg.getConfVar(var="stack"),
                 }
                 res = Resource()
                 allroles = res.all_roles(token, options)
                 for role in allroles:
                     tokens = role["id"].split(':')[1].split("/")
-                    try:
-                        if tokens[3]=="workspaces" and tokens[5]=="upload":
-                            print ("%s %s")%(tokens[3],tokens[5])
-                        continue
-                    except Exception,exc:
-                        continue
+                    print ("%s")%(role)
             except Exception,exc:
                 print "Error in permitted: %s" % (exc)
         else:
