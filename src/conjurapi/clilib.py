@@ -72,6 +72,7 @@ def clilogin(username,password,casurl):
     apikey = login_cas(username,password,casurl,account=cfg.getConfVar(var="account"))
     delete_credentials()
     cfg.newCredential(cfg.getConfVar(var="url"), username, apikey)
+    return cfg.getCredential(cfg.getConfVar(var="url"))
 
 def cliauthenticate(account=None):
     cfg = ConjurConfig()
