@@ -69,7 +69,8 @@ def delete_credentials():
 
 def clilogin(username,password,casurl):
     cfg = ConjurConfig()
-    apikey = login_cas(username,password,casurl,account=cfg.getConfVar(var="account"))
+    apikey = login_cas(username,password,casurl,account=cfg.getConfVar(var="account"),prefix="/cmi-cas")
+    print apikey
     delete_credentials()
     cfg.newCredential(cfg.getConfVar(var="url"), username, apikey)
     return cfg.getCredential(cfg.getConfVar(var="url"))

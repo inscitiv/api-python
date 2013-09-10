@@ -7,14 +7,14 @@ import caslib,os.path,httplib, urllib, urllib2, cookielib,base64,re
 from restkit import Resource
 
 
-def cas_only(username,passwd,casurl=None,serviceurl=None,account=None):
+def cas_only(username,passwd,casurl=None,serviceurl=None,account=None,prefix=""):
     conaccount = account
 
     try:
         params = urllib.urlencode({'username': username, 'password': passwd})
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
         conn = httplib.HTTPSConnection(casurl,443)
-        conn.request("POST", "/v1/tickets/", params, headers)
+        conn.request("POST", ("%s/v1/tickets/") % (prefix), params, headers)
         response = conn.getresponse()
         data = response.read()
         location = response.getheader('location')
@@ -31,21 +31,22 @@ def cas_only(username,passwd,casurl=None,serviceurl=None,account=None):
             service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (conaccount)
         params = urllib.urlencode({'service': service })
         conn = httplib.HTTPSConnection(casurl,443)
-        conn.request("POST", "/v1/tickets/%s" % ( tgt ), params, headers)
+        conn.request("POST", "%s/v1/tickets/%s" % ( prefix,tgt ), params, headers)
         response = conn.getresponse()
         st = response.read()
         conn.close()
         return st
     except Exception,exc:
-        print "CAS login error: %s" % (exc)
+        print "CAS login error cas_only: %s" % (exc)
         return None
 
 #this logs-in and gets the service token for cas and returns the apikey
-def login_cas(username,passwd,casurl=None,account=None):
-    conaccount = account            
+def login_cas(username,passwd,casurl=None,account=None,prefix=""):
+    conaccount = account
+    print casurl            
     try:
         service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (conaccount)
-        st = cas_only(username,passwd,casurl,account=conaccount)        
+        st = cas_only(username,passwd,casurl,serviceurl=service,account=conaccount,prefix)        
         bodyurl =  "%s?ticket=%s" % ( service, st )
         cj = cookielib.CookieJar()
         no_proxy_support = urllib2.ProxyHandler({})
@@ -56,7 +57,7 @@ def login_cas(username,passwd,casurl=None,account=None):
         protected_data = urllib2.urlopen(bodyurl).read()
         return protected_data
     except Exception,exc:
-        print "CAS login error: %s" % (exc)
+        print "CAS login error login_cas: %s" % (exc)
         return None
        
 #pass api key and username to get a token. Token is usually base64.encodestring'd and put in headers.
