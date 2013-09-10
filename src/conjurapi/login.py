@@ -43,10 +43,9 @@ def cas_only(username,passwd,casurl=None,serviceurl=None,account=None,prefix="")
 #this logs-in and gets the service token for cas and returns the apikey
 def login_cas(username,passwd,casurl=None,account=None,prefix=""):
     conaccount = account
-    print casurl            
     try:
         service  = 'https://authn-%s-conjur.herokuapp.com/users/login' % (conaccount)
-        st = cas_only(username,passwd,casurl,serviceurl=service,account=conaccount,prefix)        
+        st = cas_only(username,passwd,casurl,serviceurl=service,account=conaccount,prefix=prefix)        
         bodyurl =  "%s?ticket=%s" % ( service, st )
         cj = cookielib.CookieJar()
         no_proxy_support = urllib2.ProxyHandler({})
