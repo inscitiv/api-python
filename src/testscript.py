@@ -74,4 +74,4 @@ def main(argv):
 if __name__ == "__main__":
     main(sys.argv[1:])
 
-#login_cas("dbernick","XXXXXXX","cas-cmi-conjur.herokuapp.com")
+#login_cas("dbernick","XXXXXXX","cas.genomebridge.org")
