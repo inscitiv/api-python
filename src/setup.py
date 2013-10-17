@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='conjurapi',
-    version='0.1',
+    version='0.4', # or any other number to denote dependency on conjur v4 stack
     description='Conjur2 Python API',
     author='Genome Bridge',
     author_email='david@genomebridge.org',

@@ -3,4 +3,4 @@ plugins:
 - xxxxxx
 cas: cas-xxx-conjur.herokuapp.com
 url: authn-xxxx-conjur.herokuapp.com
-stack: v3
+stack: v4

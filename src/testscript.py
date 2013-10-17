@@ -62,7 +62,9 @@ def main(argv):
                 res = Resource()
                 allroles = res.all_roles(token, options)
                 for role in allroles:
-                    tokens = role["id"].split(':')[1].split("/")
+                    # current format is <account>:<kind>:<roleid>
+                    tokens = role.split(':')[2].split("/")
+                    # TODO: update all code which relies on obsoleted dict format
                     print ("%s")%(role)
             except Exception,exc:
                 print "Error in permitted: %s" % (exc)
