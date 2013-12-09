@@ -5,7 +5,7 @@ Created on Jul 7, 2013
 '''
 import caslib,os.path,httplib, urllib, urllib2, cookielib,base64,re
 from restkit import Resource
-
+import requests
 
 def cas_only(username,passwd,casurl=None,serviceurl=None,account=None,prefix=""):
     conaccount = account
@@ -62,12 +62,15 @@ def login_cas(username,passwd,casurl=None,account=None,prefix=""):
 #pass api key and username to get a token. Token is usually base64.encodestring'd and put in headers.
 def authenticate(username=None,apikey=None,account=None):
     try:
-        res = Resource('https://authn-%s-conjur.herokuapp.com' % (account))
-        url = "/users/%s/authenticate" % username
-        params = {}
-        headers = {"Accept": "text/plain"}
-        r=res.post(url,payload=apikey,headers=headers,params_dict=params)
-        return r.body_string()
+        #res = Resource('https://authn-%s-conjur.herokuapp.com' % (account))
+        #url = "/users/%s/authenticate" % username
+        #params = {}
+        #headers = {"Accept": "text/plain"}
+        #r=res.post(url,payload=apikey,headers=headers,params_dict=params)
+        #return r.body_string()
+        url = "https://authn-%s-conjur.herokuapp.com/users/%s/authenticate" % (account,urllib.quote_plus(username))
+        r = requests.post(url,data=apikey)
+        return r.text
     except Exception,exc:
         print "Error authenticate: %s" % (exc)
         
