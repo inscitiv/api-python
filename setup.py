@@ -24,6 +24,7 @@ setup(
         'caslib',
         'boto',
         'restkit',
-        'pyyaml'
+        'pyyaml',
+        'requests'
       ],
       )
