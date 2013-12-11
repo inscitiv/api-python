@@ -2,3 +2,4 @@ caslib
 boto
 restkit
 pyyaml
+requests
