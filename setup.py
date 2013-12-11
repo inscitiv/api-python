@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='conjurapi',
-    version='0.1',
+    version='0.2',
     description='Conjur2 Python API',
     author='Genome Bridge',
     author_email='david@genomebridge.org',
